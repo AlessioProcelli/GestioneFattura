@@ -11,7 +11,7 @@ import java.util.List;
  * @author Default
  */
 public abstract class Subject {
-    List<Observer> osservatori;
+    protected List<Observer> osservatori;
     public void add(Observer o){
         osservatori.add(o);
     }
