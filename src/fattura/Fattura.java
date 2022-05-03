@@ -11,19 +11,88 @@ package fattura;
 
 import clienti.Cliente;
 import java.text.DateFormat;
+import java.util.Date;
 import java.util.List;
 import metodoPagamento.MetodoPagamento;
 import prodotti.Prodotto;
 
-public class Fattura {
-    Cliente cliente;
-    int numeroFattura;
-    DateFormat dataEmissione;
-    List<Prodotto> articoli;
-    int imponibile;
-    int ivaTot;
-    int totale;
-    Tipologia tipologia;
-    MetodoPagamento metodoPagamento;
-    DateFormat dataScadenza;
+public  abstract class Fattura {
+    private Cliente cliente;
+    private int numeroFattura;
+    private Date dataEmissione;
+    private List<Prodotto> articoli;
+    private float imponibile;
+    private float ivaTot;
+    private float totale;
+    private Tipologia tipologia;
+    private MetodoPagamento metodoPagamento;
+    private Date dataScadenza;
+    
+    public Fattura(Cliente cliente, int numeroFattura, Date dataEmissione, List<Prodotto> articoli, Tipologia tipologia, MetodoPagamento metodoPagamento, Date dataScadenza) {
+        this.cliente = cliente;
+        this.numeroFattura = numeroFattura;
+        this.dataEmissione = dataEmissione;
+        this.articoli = articoli;
+        this.ivaTot = ivaTot;
+        this.tipologia = tipologia;
+        this.metodoPagamento = metodoPagamento;
+        this.dataScadenza = dataScadenza;
+        calcolaImponibile();
+        calcolaTotale();
+    }
+   
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public int getNumeroFattura() {
+        return numeroFattura;
+    }
+
+    public Date getDataEmissione() {
+        return dataEmissione;
+    }
+
+    public List<Prodotto> getArticoli() {
+        return articoli;
+    }
+
+    public float getImponibile() {
+        return imponibile;
+    }
+
+    public float getIvaTot() {
+        return ivaTot;
+    }
+
+    public float getTotale() {
+        return totale;
+    }
+
+    public Tipologia getTipologia() {
+        return tipologia;
+    }
+
+    public MetodoPagamento getMetodoPagamento() {
+        return metodoPagamento;
+    }
+
+    public Date getDataScadenza() {
+        return dataScadenza;
+    }
+
+    private void calcolaImponibile() {
+        
+        for(int i=0;i< articoli.size();i++){
+            float prezzo=articoli.get(i).getPrezzo()* articoli.get(i).getQuantita();
+            imponibile+=prezzo;
+            ivaTot+=((prezzo*articoli.get(i).getIva())/100);
+        }
+    }
+
+    private void calcolaTotale() {
+        totale=imponibile+ivaTot;
+    }
+    
 }
