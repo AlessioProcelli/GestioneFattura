@@ -7,7 +7,11 @@ package gateway;
 import clienti.Cliente;
 import fattura.Fattura;
 import fattura.Parametri;
+import java.util.ArrayList;
 import java.util.List;
+import metodoPagamento.MetodoPagamento;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import prodotti.Prodotto;
 
 /**
@@ -17,9 +21,11 @@ import prodotti.Prodotto;
 public interface Gateway {
     
     public Boolean memorizzaCliente(Cliente cliente);
-    public List<Cliente> getClienti();
-    public Boolean memorizzaProdotto(Prodotto prodotto);
+    public ArrayList<Cliente> getClienti();
+    
     public Boolean memorizzaFattura(Fattura fattura);
-    public List<Fattura> restuisciFatture(Parametri parametri);
+    public ArrayList<Fattura> getFatture(Parametri parametri);
     public Boolean modificaFattura(Fattura fattura);
+    public Boolean memorizzaMetodoPagamento(MetodoPagamento metodoPagamento);
+    public MetodoPagamento getMetodoPagamento();
 }

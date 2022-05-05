@@ -9,6 +9,13 @@ package prodotti;
  * @author Default
  */
  public enum Tipo {
-    Prodotto,
-    Servizio;
+    Prodotto("Prodotto"),
+    Servizio("Servizio");
+    private final String etichetta;
+    private Tipo(String text){
+       etichetta=text; 
+    }
+    public String toString(){
+        return etichetta;
+    }
     }

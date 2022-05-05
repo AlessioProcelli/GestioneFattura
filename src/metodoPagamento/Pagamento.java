@@ -9,9 +9,16 @@ package metodoPagamento;
  * @author Default
  */
 public enum Pagamento {
-    vistaFattura,
-    G30,
-    G60,
-    G90;
+    vistaFattura("VF"),
+    G30("G30"),
+    G60("G60"),
+    G90("G90");
     
+    public final String etichetta;
+    private Pagamento(String text){
+       etichetta=text; 
+    }
+    public String toString(){
+        return etichetta;
+    }
 }

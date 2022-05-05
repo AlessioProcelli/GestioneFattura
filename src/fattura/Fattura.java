@@ -28,6 +28,7 @@ public  abstract class Fattura {
     private MetodoPagamento metodoPagamento;
     private Date dataScadenza;
     private Boolean pagato=false;
+    private float daAvere;
     
     public Fattura(Cliente cliente, int numeroFattura, Date dataEmissione, List<Prodotto> articoli, Tipologia tipologia, MetodoPagamento metodoPagamento, Date dataScadenza) {
         this.cliente = cliente;
@@ -40,6 +41,7 @@ public  abstract class Fattura {
         this.dataScadenza = dataScadenza;
         calcolaImponibile();
         calcolaTotale();
+        this.daAvere=totale;
     }
    
 
@@ -50,9 +52,22 @@ public  abstract class Fattura {
     public Boolean getPagato() {
         return pagato;
     }
+    
+    public void setDaAvere(float d){
+        this.daAvere=d;
+        if(daAvere<=0){
+            daAvere=0;
+            pagato=true;
+        }
+    }
 
+    public float getDaAvere() {
+        return daAvere;
+    }
+    
     public void setPagato(Boolean pagato) {
         this.pagato = pagato;
+        this.daAvere=0;
     }
     
 

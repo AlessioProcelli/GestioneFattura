@@ -13,14 +13,28 @@ import java.util.Date;
  */
 
 public class Parametri {
-    Date anno;
+    String anno;
     Boolean pagato;
     Cliente cliente;
  
-    Parametri(Date anno, Boolean  pagato , Cliente cliente){
+    public Parametri(String anno, Boolean  pagato , Cliente cliente){
         this.anno=anno;
         this.pagato=pagato;
         this.cliente=cliente;
     }
+
+    public String getAnno() {
+        return anno;
+    }
+
+    public Boolean getPagato() {
+        return pagato;
+    }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    
     
 }

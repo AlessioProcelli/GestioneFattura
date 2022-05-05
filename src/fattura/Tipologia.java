@@ -9,6 +9,13 @@ package fattura;
  * @author Default
  */
 public enum Tipologia {
-    Fattura,
-    NotaDiCredito;
+    Fattura("Fattura"),
+    NotaDiCredito("NotaDiCredito");
+    private final String etichetta;
+    private Tipologia(String text){
+       etichetta=text; 
+    }
+    public String toString(){
+        return etichetta;
+    }
 }
