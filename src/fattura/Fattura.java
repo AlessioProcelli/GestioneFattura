@@ -27,6 +27,7 @@ public  abstract class Fattura {
     private Tipologia tipologia;
     private MetodoPagamento metodoPagamento;
     private Date dataScadenza;
+    private Boolean pagato=false;
     
     public Fattura(Cliente cliente, int numeroFattura, Date dataEmissione, List<Prodotto> articoli, Tipologia tipologia, MetodoPagamento metodoPagamento, Date dataScadenza) {
         this.cliente = cliente;
@@ -45,6 +46,15 @@ public  abstract class Fattura {
     public Cliente getCliente() {
         return cliente;
     }
+
+    public Boolean getPagato() {
+        return pagato;
+    }
+
+    public void setPagato(Boolean pagato) {
+        this.pagato = pagato;
+    }
+    
 
     public int getNumeroFattura() {
         return numeroFattura;
@@ -94,5 +104,23 @@ public  abstract class Fattura {
     private void calcolaTotale() {
         totale=imponibile+ivaTot;
     }
+    public void printConsole(){
+                  cliente.printConsole();
+                  System.out.println(numeroFattura);
+                  System.out.println(dataEmissione);
+                  for(int i=0;i<articoli.size();i++){
+                      System.out.println("Articolo:"+Integer.toString(i));
+                      articoli.get(i).printConsole();
+                  }
+                  System.out.println(Float.toString(imponibile)); 
+                  System.out.println(Float.toString(ivaTot));
+                  System.out.println(Float.toString(totale));
+                  System.out.println(tipologia.toString());
+                  metodoPagamento.printConsole();
+                  System.out.println(dataScadenza);
+                  
+                  
+    }
+    
     
 }
