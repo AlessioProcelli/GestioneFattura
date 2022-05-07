@@ -38,12 +38,12 @@ public class GestoreFatture {
      */
     public static void main(String[] args) throws Exception {
    System.out.println("Ciao!");
-   GatewayConcreto g =new GatewayConcreto();
+   GatewayConcreto g = GatewayConcreto.getInstance();
    ClienteBusiness cliente= new ClienteBusiness(1,"prova1", "viale morgagni 64", 
            "firenze", "FI","51031","86334519757", "MRCRSS00A01E273I", "prova@gmail.com","KRRH6B9","IT");
    /*ClientePubblico cliente= new ClientePubblico(1,"prova1", "viale morgagni 64", 
            "firenze", "FI","51031","86334519757", "MRCRSS00A01E273I", "prova@gmail.com","KRRH6B9","IT","identificativo:nfisdug");*/
-   g.memorizzaCliente(cliente);
+ //  g.memorizzaCliente(cliente);
   
   SimpleDateFormat simpleDate = new SimpleDateFormat("yyyy-MM-dd");
     /*Date date = format.parse("2022-12-12");
@@ -72,20 +72,20 @@ public class GestoreFatture {
                   System.out.println(tipologia);
                   System.out.println(codiceAnagrafico);*/
    
-   /*FatturaBusiness fattura;
+   FatturaBusiness fattura;
    Prodotto prod= new Prodotto(22, "BCVFF000", "Prodotto di prova codice 1087",1, 100, Tipo.Prodotto);
    ArrayList<Prodotto> listProd=new ArrayList<Prodotto>();
    listProd.add(prod);
-   listProd.add(new Prodotto(22, "BCVFF000", "Prodotto di prova codice 1087",2,300, Tipo.Prodotto));
+   listProd.add(new Prodotto(22, "AAAAAAA", "Prodotto di prova trovami codice 1087",2,300, Tipo.Prodotto));
    MetodoPagamento metod= new MetodoPagamento(Pagamento.G60, "Banca di Prova", "908709879898");
    fattura= new FatturaBusiness(
            cliente,
-           0, 
-           simpleDate.parse("2023-07-02"), 
+           1, 
+           simpleDate.parse("2022-07-02"), 
            listProd, 
            Tipologia.Fattura,
            metod,
-           simpleDate.parse("2023-08-02"));
+           simpleDate.parse("2022-08-02"));
  /*  fattura= new FatturaPubblica(
            cliente,
            0, 
@@ -110,10 +110,10 @@ System.out.println(x);*/
 
 /*Cliente clienteMarcio=new ClientePubblico(1,"prova1", "viale morgagni 64", 
            "firenze", "FI","51031","86334519757", "MRCRSS00A01E273I", "prova@gmail.com","KRRH6B9","IT","identificativo:nfisdug");*/
-/*ArrayList<Fattura> l=g.getFatture(new Parametri(null,null,null));
-   System.out.println(l.size());
-  for(int x=0;x<l.size();x++){
+//ArrayList<Fattura> l=g.getFatture(new Parametri(null,null,null,"AAAAAAA"));
+   System.out.println(g.getIdFattura(simpleDate.parse("2022-05-02"),"P"));
+  /*for(int x=0;x<l.size();x++){
       System.out.println(l.get(x).getDataEmissione());
-    }
-   */
+    }*/
+   
 }}
