@@ -11,6 +11,7 @@ package fattura;
 
 import clienti.Cliente;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import metodoPagamento.MetodoPagamento;
@@ -20,7 +21,7 @@ public  abstract class Fattura {
     private Cliente cliente;
     private int numeroFattura;
     private Date dataEmissione;
-    private List<Prodotto> articoli;
+    private ArrayList<Prodotto> articoli;
     private float imponibile;
     private float ivaTot;
     private float totale;
@@ -30,7 +31,7 @@ public  abstract class Fattura {
     private Boolean pagato=false;
     private float daAvere;
     
-    public Fattura(Cliente cliente, int numeroFattura, Date dataEmissione, List<Prodotto> articoli, Tipologia tipologia, MetodoPagamento metodoPagamento, Date dataScadenza) {
+    public Fattura(Cliente cliente, int numeroFattura, Date dataEmissione, ArrayList<Prodotto> articoli, Tipologia tipologia, MetodoPagamento metodoPagamento, Date dataScadenza) {
         this.cliente = cliente;
         this.numeroFattura = numeroFattura;
         this.dataEmissione = dataEmissione;
@@ -79,7 +80,7 @@ public  abstract class Fattura {
         return dataEmissione;
     }
 
-    public List<Prodotto> getArticoli() {
+    public ArrayList<Prodotto> getArticoli() {
         return articoli;
     }
 

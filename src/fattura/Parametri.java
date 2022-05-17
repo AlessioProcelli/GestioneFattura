@@ -11,16 +11,29 @@ import java.util.Date;
  *
  * @author Default
  */
-
 public class Parametri {
+
     String anno;
     Boolean pagato;
     Cliente cliente;
- 
-    public Parametri(String anno, Boolean  pagato , Cliente cliente){
-        this.anno=anno;
-        this.pagato=pagato;
-        this.cliente=cliente;
+    String cercaString;
+
+    public Parametri(String anno, Boolean pagato, Cliente cliente, String cercaStringa) {
+        this.anno = anno;
+        this.pagato = pagato;
+        this.cliente = cliente;
+        this.cercaString = cercaStringa;
+    }
+
+    public Parametri() {
+       this.anno = null;
+        this.pagato = null;
+        this.cliente = null;
+        this.cercaString = null;
+    }
+
+    public String getCercaString() {
+        return cercaString;
     }
 
     public String getAnno() {
@@ -35,6 +48,4 @@ public class Parametri {
         return cliente;
     }
 
-    
-    
 }

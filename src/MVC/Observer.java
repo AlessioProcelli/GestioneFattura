@@ -10,5 +10,5 @@ package MVC;
  */
 public interface Observer {
     
-    public abstract void update(Subject s);
+    public abstract void update();
 }

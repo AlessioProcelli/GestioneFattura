@@ -48,13 +48,18 @@ import prodotti.Tipo;
  * @author Default
  */
 public class GatewayConcreto implements Gateway {
+    private static GatewayConcreto instance = null; 
+ 
+    private GatewayConcreto() {} 
+ 
+    public static GatewayConcreto getInstance() {
+      
+        if (instance == null) {
+            instance = new GatewayConcreto();
+        }
+        return instance;
+    }
 
-final String PATH_CLIENTI="../Database/Clienti/";
-final String NOME_FILE_CLIENTI="clienti.xml"; 
-final String PATH_FATTURE="../Database/Fatture/";
-final String PATH_METODOPAGAMENTO="../Database/MetodoPagamentoSalvato/";
-final String FILE_METODOPAGAMENTO="pagamento.xml";
-final String PATH_FATTURE_ARUBA="../Database/Aruba/";
 
     @Override
     public Boolean memorizzaCliente (Cliente cliente){
@@ -222,9 +227,15 @@ final String PATH_FATTURE_ARUBA="../Database/Aruba/";
         if(fattura.getCliente() instanceof ClientePubblico){
             formatoTrasmissione="FPA12";
         }
+
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(fattura.getDataEmissione());
         String annoCorrente=Integer.toString(calendar.get(Calendar.YEAR));
+        
+        String numero="FPR"+ Integer.toString(fattura.getNumeroFattura())+"/"+annoCorrente;
+        if(fattura instanceof FatturaPubblica){
+            numero="FPA"+ Integer.toString(fattura.getNumeroFattura())+"/"+annoCorrente;
+        }
        
         File fileFattura;
         List<Prodotto> prodotti= fattura.getArticoli();
@@ -301,8 +312,18 @@ final String PATH_FATTURE_ARUBA="../Database/Aruba/";
                         datiDoc.appendChild(creaElemento(doc,datiDoc, "TipoDocumento",codiceTipoDocumento));
                         datiDoc.appendChild(creaElemento(doc,datiDoc, "Divisa","EUR"));
                         datiDoc.appendChild(creaElemento(doc,datiDoc, "Data",simpleDate.format(fattura.getDataEmissione())));
-                        datiDoc.appendChild(creaElemento(doc,datiDoc, "Numero","FPR"+ Integer.toString(fattura.getNumeroFattura())+"/"+annoCorrente));
+                        datiDoc.appendChild(creaElemento(doc,datiDoc, "Numero",numero));
                         datiDoc.appendChild(creaElemento(doc,datiDoc, "ImportoTotaleDocumento",formattaNumero.format (fattura.getTotale())));
+                        bodyDati.appendChild(datiDoc);
+                        if(fattura instanceof FatturaPubblica){
+                         FatturaPubblica fatP= (FatturaPubblica)fattura;
+                         Element datiOrd = doc.createElement("DatiOrdineAcquisto");
+                         datiOrd.appendChild(creaElemento(doc,datiOrd, "RiferimentoNumeroLinea","1"));
+                         datiOrd.appendChild(creaElemento(doc,datiOrd, "IdDocumento",fatP.getIdentificativo()));
+                         datiOrd.appendChild(creaElemento(doc,datiOrd, "Data",simpleDate.format(fatP.getDataEmissioneGara())));
+                         datiOrd.appendChild(creaElemento(doc,datiOrd, "CodiceCIG",fatP.getCig()));
+                         bodyDati.appendChild(datiOrd);
+                        }
                     Element bodyBeni = doc.createElement("DatiBeniServizi"); 
                         for(int i=1;i<=prodotti.size();i++){
                             Prodotto prodCorrente= prodotti.get(i-1);
@@ -321,6 +342,9 @@ final String PATH_FATTURE_ARUBA="../Database/Aruba/";
                         bodyRiepilogo.appendChild(creaElemento(doc,bodyRiepilogo, "AliquotaIVA",formattaNumero.format(prodotti.get(0).getIva())));
                         bodyRiepilogo.appendChild(creaElemento(doc,bodyRiepilogo, "ImponibileImporto",formattaNumero.format(fattura.getImponibile())));
                         bodyRiepilogo.appendChild(creaElemento(doc,bodyRiepilogo, "Imposta",formattaNumero.format(fattura.getIvaTot())));
+                        if(fattura instanceof FatturaPubblica){
+                        bodyRiepilogo.appendChild(creaElemento(doc,bodyRiepilogo, "EsigibilitaIVA","S"));
+                        }
                         
                     Element bodyPagamento = doc.createElement("DatiPagamento");
                     bodyPagamento.appendChild(creaElemento(doc,bodyPagamento, "CondizioniPagamento","TP02"));
@@ -349,7 +373,7 @@ final String PATH_FATTURE_ARUBA="../Database/Aruba/";
                         headerCessionario.appendChild(cessionarioSede);
                 radice.appendChild(fatturaBody);
                     fatturaBody.appendChild(bodyDati);
-                        bodyDati.appendChild(datiDoc);
+                        
                     fatturaBody.appendChild(bodyBeni); 
                         bodyBeni.appendChild(bodyRiepilogo);
                     fatturaBody.appendChild(bodyPagamento);
@@ -440,7 +464,25 @@ final String PATH_FATTURE_ARUBA="../Database/Aruba/";
         }
         return result;
     }
-   
+    
+    private ArrayList<Fattura> filtraCercaStringa(ArrayList<Fattura> list, String s) {
+        ArrayList<Fattura> result = new ArrayList<Fattura>();
+        for (int i = 0; i < list.size(); i++) {
+            ArrayList<Prodotto> listProd = list.get(i).getArticoli();
+            Boolean trovato = false;
+            for (int j = 0; j < listProd.size(); j++) {
+                Prodotto prod = listProd.get(j);
+                if (prod.getDescrizione().contains(s) || prod.getCodice().equals(s)) {
+                    trovato = true;
+                }
+            }
+            if (trovato) {
+                result.add(list.get(i));
+            }
+        }
+        return result;
+    }
+
     @Override
     public ArrayList<Fattura> getFatture(Parametri parametri) {
         ArrayList<Fattura> risultato = new ArrayList<Fattura>();
@@ -461,11 +503,16 @@ final String PATH_FATTURE_ARUBA="../Database/Aruba/";
         if (parametri.getCliente() != null) {
             risultato = filtraFattureCliente(risultato, parametri.getCliente());
         }
+        
+        if(parametri.getCercaString()!=null){
+            risultato= filtraCercaStringa(risultato,parametri.getCercaString());
+        }
+        
         Collections.reverse(risultato);
         return risultato;
     }
 
-    public Fattura convertiXmlFattura(String path, String file) {
+    private Fattura convertiXmlFattura(String path, String file) {
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder;
         File fileFattura;
@@ -505,8 +552,10 @@ final String PATH_FATTURE_ARUBA="../Database/Aruba/";
             if (tipo.equals("Pubblica")) {
                 String cig = e.getElementsByTagName("Cig").item(0).getTextContent();
                 String cup = e.getElementsByTagName("Cup").item(0).getTextContent();
+                String identificativo = e.getElementsByTagName("Identificativo").item(0).getTextContent();
+                Date dataEmissioneFattura=stringToDate(e.getElementsByTagName("DataEmissioneGara").item(0).getTextContent());
                 result = new FatturaPubblica(cliente, Integer.parseInt(numeroFatt), stringToDate(dataEmissione),
-                        prodotti, tipologia, mp, stringToDate(dataScadenza), cig, cup);
+                        prodotti, tipologia, mp, stringToDate(dataScadenza), cig, cup,identificativo,dataEmissioneFattura);
             } else {
                 result = new FatturaBusiness(cliente, Integer.parseInt(numeroFatt), stringToDate(dataEmissione),
                         prodotti, tipologia, mp, stringToDate(dataScadenza));
@@ -592,7 +641,7 @@ final String PATH_FATTURE_ARUBA="../Database/Aruba/";
         return result;
     }
     
-    private String[] getElementiPath(String path) {
+    public String[] getElementiPath(String path) {
         File f = new File(path);
         return f.list();
     }
@@ -713,6 +762,8 @@ final String PATH_FATTURE_ARUBA="../Database/Aruba/";
                 FatturaPubblica fatturaP = (FatturaPubblica) fattura;
                 radice.appendChild(creaElemento(doc, radice, "Cig", fatturaP.getCig()));
                 radice.appendChild(creaElemento(doc, radice, "Cup", fatturaP.getCup()));
+                radice.appendChild(creaElemento(doc, radice, "Identificativo", fatturaP.getIdentificativo()));
+                radice.appendChild(creaElemento(doc, radice, "DataEmissioneGara",simpleDate.format(fatturaP.getDataEmissioneGara())));
             }
             doc.appendChild(radice);
             creaFileXML(doc, fileFattura);
@@ -751,5 +802,68 @@ final String PATH_FATTURE_ARUBA="../Database/Aruba/";
         File tempFile = new File(path+fileName);
         return tempFile.exists();
     }
+    
+    public int getIdFattura(Date dat,String tipo){
+        int result=0;
+        switch(tipo){
+            case"P":
+            result=getIdFatturaPubblica(dat);break;  
+            case"B":
+            result=getIdFatturaBusiness(dat);break; 
+        }
+        if(result != 0){
+        result+=1;
+        }
+        return result;
+    }
+    
+    private int getIdFatturaPubblica(Date d){
+        int result=0;
+        String annoCorrente=Integer.toString(getAnno(d));
+        ArrayList<Fattura> list=getFatture(new Parametri(annoCorrente,null,null,null));
+        for(int i=0;i<list.size();i++){
+            Fattura current=list.get(i);
+            if(current instanceof FatturaPubblica && current.getNumeroFattura()>result){
+                result=current.getNumeroFattura();
+            }
+           }
+        return result;
+    } 
+    private int getIdFatturaBusiness(Date d){
+        int result=0;
+        String annoCorrente=Integer.toString(getAnno(d));
+        ArrayList<Fattura> list=getFatture(new Parametri(annoCorrente,null,null,null));
+        for(int i=0;i<list.size();i++){
+            Fattura current=list.get(i);
+            if(current instanceof FatturaBusiness && current.getNumeroFattura()>result){
+                result=current.getNumeroFattura();
+            }
+           }
+        return result;
+    } 
+    
+    private int getAnno(Date date){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return calendar.get(Calendar.YEAR);
+    }
+    
+    public int getIdCliente(){
+        int result=0;
+        ArrayList<Cliente> list= getClienti();
+        for(int i=0;i<list.size();i++){
+            int current=list.get(i).getId();
+            if(current>result){
+                result=current;
+            }
+        }
+        if(result!=0){
+            result+=1;
+        }
+        return result;
+    }
+
+   
+   
     
 }

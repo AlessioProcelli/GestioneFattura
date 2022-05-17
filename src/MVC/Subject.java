@@ -4,14 +4,15 @@
  */
 package MVC;
 
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  *
  * @author Default
  */
 public abstract class Subject {
-    protected List<Observer> osservatori;
+    protected ArrayList<Observer> osservatori= new ArrayList<>();
+    
     public void add(Observer o){
         osservatori.add(o);
     }
@@ -20,7 +21,7 @@ public abstract class Subject {
         return risultato;
     }
     public void notifica(){
-        osservatori.forEach(o  -> o.update(this) );
+        osservatori.forEach(o  -> o.update() );
     }
     
 }

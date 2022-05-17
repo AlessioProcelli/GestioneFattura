@@ -36,4 +36,6 @@ public interface Gateway {
     public Boolean memorizzaMetodoPagamento(MetodoPagamento metodoPagamento);
     public MetodoPagamento getMetodoPagamento();
     public int getIdCliente();
+
+   
 }

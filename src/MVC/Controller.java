@@ -11,8 +11,14 @@ package MVC;
 public class Controller {
     private Model model;
     
-    Controller(Model model){
+    public Controller(Model model){
         this.model=model;
     }
+
+    Model getModel() {
+       return model;
+    }
+
+    
     
 }

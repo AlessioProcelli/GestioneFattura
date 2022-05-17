@@ -6,6 +6,7 @@ package fattura;
 
 import clienti.Cliente;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import metodoPagamento.MetodoPagamento;
@@ -17,7 +18,7 @@ import prodotti.Prodotto;
  */
 public class FatturaBusiness extends Fattura {
     
-    public FatturaBusiness(Cliente cliente, int numeroFattura, Date dataEmissione, List<Prodotto> articoli, Tipologia tipologia, MetodoPagamento metodoPagamento, Date dataScadenza) {
+    public FatturaBusiness(Cliente cliente, int numeroFattura, Date dataEmissione, ArrayList<Prodotto> articoli, Tipologia tipologia, MetodoPagamento metodoPagamento, Date dataScadenza) {
         super(cliente, numeroFattura, dataEmissione, articoli, tipologia, metodoPagamento, dataScadenza);
     }
     
