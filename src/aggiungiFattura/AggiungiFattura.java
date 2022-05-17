@@ -7,7 +7,7 @@ package aggiungiFattura;
 
 import aggiungiFattura.AggiungiFatturaController;
 import aggiungiFattura.AggiungiFatturaModel;
-import MVC.View;
+import mvc.View;
 import clienti.Cliente;
 import clienti.ClientePubblico;
 import fattura.Fattura;

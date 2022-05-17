@@ -4,7 +4,7 @@
  */
 package aggiungiFattura;
 
-import MVC.Model;
+import mvc.Model;
 import clienti.Cliente;
 import gateway.Gateway;
 import gateway.GatewayConcreto;

@@ -4,11 +4,11 @@
  */
 package gestorefatture;
 
-import Home.Home;
-import FiltraFatture.ControllerFiltraFattura;
-import MVC.HomeController;
-import MVC.HomeModel;
-import FiltraFatture.ModelFiltraFattura;
+import home.Home;
+import filtraFatture.ControllerFiltraFattura;
+import mvc.HomeController;
+import mvc.HomeModel;
+import filtraFatture.ModelFiltraFattura;
 import clienti.Cliente;
 import clienti.ClienteBusiness;
 import clienti.ClientePubblico;
