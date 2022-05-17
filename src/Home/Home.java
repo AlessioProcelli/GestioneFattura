@@ -13,7 +13,9 @@ import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatIntelliJLaf;
 import com.formdev.flatlaf.IntelliJTheme;
 import FiltraFatture.FiltraFatture;
-import gestorefatture.AggiungiFattura;
+import aggiungiFattura.AggiungiFatturaController;
+import aggiungiFattura.AggiungiFatturaModel;
+import aggiungiFattura.AggiungiFattura;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
@@ -69,7 +71,10 @@ public class Home extends View{
         ModelFiltraFattura mf= new ModelFiltraFattura();
         ControllerFiltraFattura cf= new ControllerFiltraFattura(mf);
         filtraFatture=new FiltraFatture(cf,mf);
-        aggiungiFattura=new AggiungiFattura();
+        AggiungiFatturaModel afm=new AggiungiFatturaModel();
+        AggiungiFatturaController afc=new AggiungiFatturaController(afm);
+        aggiungiFattura=new AggiungiFattura(afc, afm);
+        
         menù=new MenùDiNavigazione(this);
         schermata=(JPanel) filtraFatture.getContentPane();
         
