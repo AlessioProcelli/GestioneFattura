@@ -127,7 +127,6 @@ System.out.println(x);*/
    ff.setVisible(true);*/
  HomeModel hm= new HomeModel();
  HomeController hc= new HomeController(hm);
- 
  Home h=new Home(hc,hm);
  h.setVisible(true);
  

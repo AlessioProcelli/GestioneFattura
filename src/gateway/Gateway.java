@@ -32,7 +32,6 @@ public interface Gateway {
     public int getIdFattura(Date dat,String tipo);
     public Boolean memorizzaFattura(Fattura fattura);
     public ArrayList<Fattura> getFatture(Parametri parametri);
-    public Boolean modificaFattura(Fattura fattura);
     public Boolean memorizzaMetodoPagamento(MetodoPagamento metodoPagamento);
     public MetodoPagamento getMetodoPagamento();
     public int getIdCliente();

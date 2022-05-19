@@ -176,7 +176,7 @@ public class GatewayConcreto implements Gateway {
                 if (tipologia.equals("pubblico")) {
                     String codiceAnagrafico = elemento.getElementsByTagName("codiceAnagrafico").item(0).getTextContent();
                     cliente = new ClientePubblico(Integer.parseInt(id), nome, via, citta, provincia,
-                            cap, partitaIva, codiceFiscale, email, codiceDestinatario, codiceAnagrafico, nazione);
+                            cap, partitaIva, codiceFiscale, email, codiceDestinatario, nazione,codiceAnagrafico);
                 } else {
                     cliente = new ClienteBusiness(Integer.parseInt(id), nome, via, citta, provincia,
                             cap, partitaIva, codiceFiscale, email, codiceDestinatario, nazione);
@@ -219,6 +219,7 @@ public class GatewayConcreto implements Gateway {
         formattaNumero.setDecimalFormatSymbols(dfSymbols);
         SimpleDateFormat simpleDate = new SimpleDateFormat("yyyy-MM-dd");
         Cliente cliente=fattura.getCliente();
+        cliente.printConsole();
         String codiceTipoDocumento="TD01";
         if(fattura.getTipologia()== Tipologia.NotaDiCredito){
             codiceTipoDocumento="TD04";
@@ -263,11 +264,11 @@ public class GatewayConcreto implements Gateway {
                     Element headerCedente = doc.createElement("CedentePrestatore");
                         Element cedenteDati = doc.createElement("DatiAnagrafici");
                             Element datiFiscale = doc.createElement("IdFiscaleIVA");
-                            if(!(fattura.getCliente() instanceof ClientePubblico)){
                             datiFiscale.appendChild(creaElemento(doc, datiFiscale, "IdPaese","IT"));
                             datiFiscale.appendChild(creaElemento(doc, datiFiscale, "IdCodice","01417750476"));
-                            }
                             cedenteDati.appendChild(datiFiscale);
+                        
+                        
                             
                         cedenteDati.appendChild(creaElemento(doc, cedenteDati, "CodiceFiscale","01417750476"));
                             Element cedenteAnagrafica = doc.createElement("Anagrafica");
@@ -646,10 +647,7 @@ public class GatewayConcreto implements Gateway {
         return f.list();
     }
 
-    @Override
-    public Boolean modificaFattura(Fattura fattura) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    
 
     @Override
     public Boolean memorizzaMetodoPagamento(MetodoPagamento metodoPagamento) {
@@ -811,9 +809,9 @@ public class GatewayConcreto implements Gateway {
             case"B":
             result=getIdFatturaBusiness(dat);break; 
         }
-        if(result != 0){
+        
         result+=1;
-        }
+        
         return result;
     }
     
@@ -857,9 +855,9 @@ public class GatewayConcreto implements Gateway {
                 result=current;
             }
         }
-        if(result!=0){
-            result+=1;
-        }
+        
+        result+=1;
+        
         return result;
     }
 

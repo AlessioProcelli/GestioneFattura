@@ -25,7 +25,9 @@ public class AggiungiFatturaModel extends Model{
     public AggiungiFatturaModel(){
         Gateway g=GatewayConcreto.getInstance();
         clienti=g.getClienti();
+        
         clienteSelezionato=clienti.get(0);
+       
     }
     
     public float getImponibile() {
