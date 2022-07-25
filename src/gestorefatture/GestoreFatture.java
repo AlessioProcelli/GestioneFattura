@@ -17,6 +17,7 @@ import fattura.FatturaBusiness;
 import fattura.FatturaPubblica;
 import fattura.Parametri;
 import fattura.Tipologia;
+import gateway.Gateway;
 import gateway.GatewayConcreto;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -27,6 +28,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import metodoPagamento.MetodoPagamento;
 import metodoPagamento.Pagamento;
 import prodotti.Prodotto;
@@ -42,7 +44,7 @@ public class GestoreFatture {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws Exception {
-  /* System.out.println("Ciao!");
+  /*
    GatewayConcreto g = GatewayConcreto.getInstance();
    ClienteBusiness cliente= new ClienteBusiness(1,"prova1", "viale morgagni 64", 
            "firenze", "FI","51031","86334519757", "MRCRSS00A01E273I", "prova@gmail.com","KRRH6B9","IT");
@@ -125,6 +127,8 @@ System.out.println(x);*/
   ControllerFiltraFattura cf= new ControllerFiltraFattura(mf);
    FiltraFatture ff= new FiltraFatture(cf,mf);
    ff.setVisible(true);*/
+ 
+
  HomeModel hm= new HomeModel();
  HomeController hc= new HomeController(hm);
  Home h=new Home(hc,hm);
