@@ -40,13 +40,13 @@ public class AggiungiFattura extends View {
         aggiungiFatturaModel=afm;
         Date date = new Date();
         initComponents();
-        setPagamentoModel();
+        setPagamentoModel(); 
         dataEmissioneFattura.setDate(date);
+        aggiungiFatturaModel.setDataEmissioneFattura(date);
         dataEmissioneGara.setDate(date);
-        dataScadenza.setDate(date);
         update();
-        
     }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -430,6 +430,11 @@ public class AggiungiFattura extends View {
         jLabel7.setText("Data scadenza:");
 
         dataScadenza.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        dataScadenza.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                dataScadenzaPropertyChange(evt);
+            }
+        });
 
         jLabel8.setFont(new java.awt.Font("Segoe UI Semibold", 1, 18)); // NOI18N
         jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -623,17 +628,17 @@ public class AggiungiFattura extends View {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(100, 100, 100)
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(100, 100, 100))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(0, 100, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 100, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(0, 15, Short.MAX_VALUE)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(0, 15, Short.MAX_VALUE))
         );
 
         pack();
@@ -657,7 +662,7 @@ public class AggiungiFattura extends View {
     }//GEN-LAST:event_numeroFatturaActionPerformed
 
     private void listaClientiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_listaClientiActionPerformed
-        String s=(String) listaClienti.getSelectedItem();
+         String s=(String) listaClienti.getSelectedItem();
         String[] splits = s.split(" - ");
         int id=Integer.parseInt(splits[0]);
         for (int i=0;i<aggiungiFatturaModel.getClienti().size();i++)
@@ -675,7 +680,7 @@ public class AggiungiFattura extends View {
         cup.setVisible(visibilità);
         identificativo.setVisible(visibilità);
         dataEmissioneGara.setVisible(visibilità);    
-        aggiungiFatturaController.calcoloIdNuovaFattura(dataEmissioneFattura.getDate());
+        aggiungiFatturaController.calcoloIdNuovaFattura();
     }//GEN-LAST:event_listaClientiActionPerformed
 
     private void bancaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bancaActionPerformed
@@ -683,7 +688,14 @@ public class AggiungiFattura extends View {
     }//GEN-LAST:event_bancaActionPerformed
 
     private void pagamentoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pagamentoActionPerformed
-        
+          String metodoSelezionato = (String) pagamento.getSelectedItem();
+        if (metodoSelezionato.equals("VF"))
+            dataScadenza.setEnabled(true);
+        else{
+            dataScadenza.setEnabled(false);
+            
+            aggiungiFatturaController.modificaScadenza(metodoSelezionato);
+        }    
     }//GEN-LAST:event_pagamentoActionPerformed
 
     private void ibanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ibanActionPerformed
@@ -708,7 +720,7 @@ public class AggiungiFattura extends View {
     }//GEN-LAST:event_imponibileActionPerformed
 
     private void aggiuntaFatturaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aggiuntaFatturaActionPerformed
-        if(iban.getText().equals("") || banca.getText().equals("")){
+       if(iban.getText().equals("") || banca.getText().equals("")){
             JOptionPane.showMessageDialog(this,"Tutti i campi devono essere compilati!","Errore",JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -742,15 +754,14 @@ public class AggiungiFattura extends View {
             else
                 nuovaFattura=new FatturaBusiness(aggiungiFatturaModel.getClienteSelezionato(), Integer.parseInt(numeroFattura.getText()), dataEmissioneFattura.getDate(), aggiungiFatturaModel.getProdotti(), Tipologia.NotaDiCredito, metodoPagamento, dataScadenza.getDate());
         
-        Gateway g=GatewayConcreto.getInstance();
-        g.memorizzaFattura(nuovaFattura);
-        aggiungiFatturaController.fatturaAggiunta(dataEmissioneFattura.getDate());
+        aggiungiFatturaController.fatturaAggiunta(dataEmissioneFattura.getDate(),nuovaFattura);
         cig.setText("");
         cup.setText("");
         imponibile.setText("0");
         iva.setText("0");
         prezzoTotale.setText("0");
         identificativo.setText("");
+        Gateway g=GatewayConcreto.getInstance();
         if(salvataggio.getState())
             g.memorizzaMetodoPagamento(metodoPagamento);
         else{
@@ -774,12 +785,27 @@ public class AggiungiFattura extends View {
     }//GEN-LAST:event_identificativoActionPerformed
 
     private void dataEmissioneFatturaPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_dataEmissioneFatturaPropertyChange
-        //aggiungiFatturaController.calcoloIdNuovaFattura(dataEmissioneFattura.getDate());
+
+        if(dataEmissioneFattura.getDate()!=null){
+            String pagamentoSelezionato=(String) pagamento.getSelectedItem();
+            if(dataEmissioneFattura.getDate()!=aggiungiFatturaModel.getDataEmissioneFattura()){ 
+                aggiungiFatturaModel.setDataEmissioneFattura(dataEmissioneFattura.getDate());
+                aggiungiFatturaController.calcoloIdNuovaFattura();
+                if(!pagamentoSelezionato.equals("VF"))
+                    aggiungiFatturaController.modificaScadenza(pagamentoSelezionato);
+            }            
+        }    
     }//GEN-LAST:event_dataEmissioneFatturaPropertyChange
 
     private void dataEmissioneFatturaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dataEmissioneFatturaMouseClicked
         System.out.print("Procello");
     }//GEN-LAST:event_dataEmissioneFatturaMouseClicked
+
+    private void dataScadenzaPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_dataScadenzaPropertyChange
+      if(dataScadenza.getDate()!=null)   
+            if(((String) pagamento.getSelectedItem()).equals("VF"))
+                aggiungiFatturaModel.setDataScadenza(dataScadenza.getDate());
+    }//GEN-LAST:event_dataScadenzaPropertyChange
 
     private void setPagamentoModel(){
         Gateway g=GatewayConcreto.getInstance();
@@ -801,15 +827,15 @@ public class AggiungiFattura extends View {
     
     @Override
     public void update(){
-        String[] nomiEIdClienti=new String[aggiungiFatturaModel.getClienti().size()];
+          String[] nomiEIdClienti=new String[aggiungiFatturaModel.getClienti().size()];
         for (int i=0; i<nomiEIdClienti.length; i++){
             nomiEIdClienti[i]=(Integer.toString(aggiungiFatturaModel.getClienti().get(i).getId())+" - "+aggiungiFatturaModel.getClienti().get(i).getNome());
 
         }    
         listaClienti.setModel(new DefaultComboBoxModel<>(nomiEIdClienti));
+        if(nomiEIdClienti.length>0) //modificato
+            listaClienti.setSelectedItem(Integer.toString(aggiungiFatturaModel.getClienteSelezionato().getId())+" - "+aggiungiFatturaModel.getClienteSelezionato().getNome());
         
-        listaClienti.setSelectedItem(Integer.toString(aggiungiFatturaModel.getClienteSelezionato().getId())+" - "+aggiungiFatturaModel.getClienteSelezionato().getNome());
-       
         Object[][] prodotti=new Object[aggiungiFatturaModel.getProdotti().size()][listaProdotti.getColumnCount()];
         for (int i=0; i<prodotti.length; i++){
             prodotti[i][0]=aggiungiFatturaModel.getProdotti().get(i).getCodice();
@@ -828,6 +854,7 @@ public class AggiungiFattura extends View {
         imponibile.setText(Float.toString(aggiungiFatturaModel.getImponibile()));
         iva.setText(Float.toString(aggiungiFatturaModel.getIva()));
         prezzoTotale.setText(Float.toString(aggiungiFatturaModel.getPrezzoTotale()));
+        dataScadenza.setDate(aggiungiFatturaModel.getDataScadenza());
         centraColonne();
         
     }
