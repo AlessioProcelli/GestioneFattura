@@ -20,6 +20,7 @@ import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -69,15 +70,17 @@ public class GatewayConcretoTest {
                 "firenze", "FI", "50134", "1234567891", "MRCRSS00A01E273I", "prova@gmail.com", "KRRH6B9", "IT");
         g.memorizzaCliente(clienteBusi);
         assertTrue(findCliente(clienteBusi));
+        assertTrue(g.eliminaCliente(clienteBusi));
         
         id =g.getIdCliente();
-        ClientePubblico clientePubbli = new ClientePubblico(id, "prova1", "viale morgagni 64",
+        ClientePubblico clientePubbli = new ClientePubblico(id, "prova1"+Integer.toString(id), "viale morgagni 64",
                 "firenze", "FI", "51031", "86334519757", "MRCRSS00A01E273I", "prova@gmail.com", "KRRH6B9", "IT", "identificativo:nfisdug"); 
         g.memorizzaCliente(clientePubbli);
         assertTrue(findCliente(clientePubbli));
+        assertTrue(g.eliminaCliente(clientePubbli));
     
     }
-    @Test
+ @Test
     public void testMemorizzaFattura() throws ParseException{
    
         SimpleDateFormat simpleDate = new SimpleDateFormat("yyyy-MM-dd");
@@ -120,9 +123,11 @@ public class GatewayConcretoTest {
         }
         g.memorizzaFattura(fattura);
         assertTrue(findFattura(fattura));
-        
-
+        assertTrue(g.eliminaFattura(fattura));
     }
+
+    
+    
     @Test
     public void testMemorizzaMPagamento() throws ParseException {
        MetodoPagamento current=g.getMetodoPagamento();
@@ -133,7 +138,64 @@ public class GatewayConcretoTest {
        assertTrue(mp.equals(g.getMetodoPagamento()));
        g.memorizzaMetodoPagamento(current);
 }
+    @Test
+    public void testFiltraPagato(){
+        ArrayList <Fattura> listFatture=g.getFatture(new Parametri());
+        ArrayList <Fattura> listFatturePagato= new ArrayList();
+        for(int i=0;i<listFatture.size();i++){
+            Fattura current=listFatture.get(i);
+            if(current.getPagato()){
+                listFatturePagato.add(current);
+            }
+        }
+           
+        
+        ArrayList result=g.getFatture(new Parametri(null,true,null,null));
+        assertTrue(equalsFatturaList(result,listFatturePagato));
+        
+        
+    }
+    
+    @Test
+    public void testFiltraAnno(){
+        ArrayList <Fattura> listFatture=g.getFatture(new Parametri());
+        ArrayList <Fattura> listFattureAnno= new ArrayList();
+        String[] anni=g.getElementiPath(Gateway.PATH_FATTURE);
+        int index=ThreadLocalRandom.current().nextInt(0, anni.length);
+        int anno=Integer.parseInt(anni[index]);
+        for(int i=0;i<listFatture.size();i++){
+            Fattura current=listFatture.get(i);
+            if(getAnno(current.getDataEmissione())==anno){
+                listFattureAnno.add(current);
+            }
+        }
+           
+        
+        ArrayList result=g.getFatture(new Parametri(Integer.toString(anno),null,null,null));
+        assertTrue(equalsFatturaList(result,listFattureAnno));
+        
+        
+    }
     
     
+    public Boolean equalsFatturaList(ArrayList<Fattura> a, ArrayList<Fattura> b){
+        if(a.size()!=b.size()){
+            return  false;
+        }
+        for(int i=0;i<a.size();i++){
+            Fattura current=a.get(i);
+            if(!b.contains(current)){
+                return false;
+            }
+        }
+        return true;
+    }
+ 
+    private int getAnno(Date date){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return calendar.get(Calendar.YEAR);
+    }
+  
    
 }
